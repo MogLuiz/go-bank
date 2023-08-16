@@ -3,12 +3,13 @@ package db
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/MogLuiz/go-bank/utils"
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateAccount(t *testing.T) {
+func createRandomAccount(t *testing.T) Account {
 	arg := CreateAccountParams{
 		Owner:    utils.RandomOwner(),
 		Balance:  utils.RandomMoney(),
@@ -25,4 +26,25 @@ func TestCreateAccount(t *testing.T) {
 
 	require.NotZero(t, account.ID)
 	require.NotZero(t, account.CreatedAt)
+
+	return account
+}
+
+func TestCreateAccount(t *testing.T) {
+	createRandomAccount(t)
+}
+
+func TestGetAccount(t *testing.T) {
+	createdAccount := createRandomAccount(t)
+	fetchedAccount, err := testQueries.GetAccount(context.Background(), createdAccount.ID)
+
+	require.NoError(t, err)
+	require.NotEmpty(t, fetchedAccount)
+
+	require.Equal(t, createdAccount.ID, fetchedAccount.ID)
+	require.Equal(t, createdAccount.Owner, fetchedAccount.Owner)
+	require.Equal(t, createdAccount.Balance, fetchedAccount.Balance)
+	require.Equal(t, createdAccount.Currency, fetchedAccount.Currency)
+
+	require.WithinDuration(t, createdAccount.CreatedAt, fetchedAccount.CreatedAt, time.Second)
 }
