@@ -10,20 +10,20 @@ import (
 )
 
 const (
-	DB_DRIVER = "postgres"
-	DB_SOURCE = "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable"
+	dbDriver = "postgres"
+	dbSource = "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable"
 )
 
-var TEST_QUERIES *Queries
+var testQueries *Queries
 
 func TestMain(m *testing.M) {
-	conn, err := sql.Open(DB_DRIVER, DB_SOURCE)
+	conn, err := sql.Open(dbDriver, dbSource)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
 	defer conn.Close()
 
-	TEST_QUERIES = New(conn)
+	testQueries = New(conn)
 
 	os.Exit(m.Run())
 }
