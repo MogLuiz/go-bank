@@ -28,6 +28,20 @@ func createRandomEntry(t *testing.T, account Account) Entry {
 }
 
 func TestCreateEntry(t *testing.T) {
-	account := createRandomAccount(t)
-	createRandomEntry(t, account)
+	createdAccount := createRandomAccount(t)
+	createRandomEntry(t, createdAccount)
+}
+
+func TestGetEntry(t *testing.T) {
+	createdAccount := createRandomAccount(t)
+	createdEntry := createRandomEntry(t, createdAccount)
+
+	fetchedEntry, err := testQueries.GetEntry(context.Background(), createdEntry.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, fetchedEntry)
+
+	require.Equal(t, createdEntry.ID, fetchedEntry.ID)
+	require.Equal(t, createdEntry.AccountID, fetchedEntry.AccountID)
+	require.Equal(t, createdEntry.Amount, fetchedEntry.Amount)
+	require.WithinDuration(t, createdEntry.CreatedAt, fetchedEntry.CreatedAt, 0)
 }
